@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Viewer | Json beautifier | Json formatter</title>
+  <meta name="description" content="format API json response in expandale tree view,
+                                    get key , value path from json in multiple languages e.g Python, Javascript,
+                                    convert json into csv,
+                                    fully protected json beautifier/prettifier without backend server,
+                                    Compliance protected json viewer"/>
+  <meta name="keyword" content="json formatter,json prettifier, json converter, online json viewer, json viewer,
+                                API, json, json to csv, json path finder, convert json to toon,
+                                json pretty print, pretty json,beautify json,validate json, json validator,
+                                json parser, online json parser"/>
+                                
+  <meta name="google-site-verification" content="Dm27bHMu5DLBhvAX_2bq_PWaGEU7AE5P5nLw9oLJdZg" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 22px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      background: linear-gradient(90deg, #1d4ed8, #6366f1, #ec4899);
+      color: #f9fafb;
+      box-shadow: 0 2px 6px rgba(15,23,42,0.25);
+      position: relative;
+      z-index: 10;
+    }
+    .title { font-size: 15px; font-weight: 700; letter-spacing: 0.03em; }
+    .title-pill {
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 500;
+      background: rgba(15,23,42,0.35);
+      border: 1px solid rgba(249,250,251,0.2);
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 4px;
+      padding: 6px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+    }
+    .btn {
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      color: #111827;
+      cursor: pointer;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+      white-space: nowrap;
+    }
+    .btn:hover:not(:disabled) {
+      background: #e5e7eb;
+      border-color: #9ca3af;
+      box-shadow: 0 1px 2px rgba(15,23,42,0.08);
+    }
+    .btn-primary {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+    .btn-primary:hover { background: #1d4ed8; border-color: #1d4ed8; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+    .btn-xs { font-size: 10px; padding: 3px 6px; }
+    .btn-toggle-active {
+      background: #2563eb;
+      border-color: #2563eb;
+      color: #ffffff;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      background: #f3f4f6;
+      overflow: hidden;
+    }
+    .content {
+      flex: 1;
+      padding: 6px 8px;
+      display: flex;
+      overflow: hidden;
+    }
+    .panel {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .right-sidebar {
+      width: 260px;
+      min-width: 230px;
+      max-width: 380px;
+      border-left: 1px solid #e5e7eb;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+      position: relative;
+    }
+    .right-resizer {
+      position: absolute;
+      left: -3px;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      cursor: col-resize;
+    }
+
+    .search-label { font-size: 11px; color: #6b7280; margin-bottom: 1px; }
+    .search-row { display: flex; align-items: center; gap: 4px; }
+    .search-input {
+      flex: 1 1 auto;
+      min-width: 120px;
+      font-size: 11px;
+      padding: 5px 7px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px #2563eb33;
+    }
+    .nav-btn {
+      flex: 0 0 auto;
+      width: 50px;
+      height: 24px;
+      border-radius: 4px;
+      border: 1px solid #d1d5db;
+      background: #f9fafb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .nav-btn:hover { background: #e5e7eb; }
+    .match-info { font-size: 11px; color: #6b7280; min-height: 16px; }
+
+    .error-bar {
+      padding: 5px 7px;
+      background: #fee2e2;
+      color: #b91c1c;
+      font-size: 11px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .tool-section {
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed #e5e7eb;
+      font-size: 11px;
+    }
+    .tool-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #111827;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .tool-caption { font-size: 10px; color: #6b7280; }
+
+    .path-display {
+      margin-top: 4px;
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      background: #f9fafb;
+      border-radius: 4px;
+      border: 1px solid #e5e7eb;
+      padding: 4px 6px;
+      min-height: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      color: #111827;
+    }
+    .path-display.empty { color: #9ca3af; }
+
+    .tool-row { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+    .progress-wrap {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      overflow: hidden;
+      margin-top: 2px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #22c55e, #16a34a);
+      transition: width 0.15s linear;
+    }
+    .progress-label {
+      font-size: 10px;
+      color: #6b7280;
+      text-align: right;
+      margin-top: 2px;
+      min-height: 12px;
+    }
+    .tool-error {
+      font-size: 10px;
+      color: #b91c1c;
+      min-height: 12px;
+      margin-top: 2px;
+    }
+
+    .dropzone {
+      margin: 10px;
+      margin-bottom: 0;
+      border-radius: 6px;
+      border: 2px dashed #d1d5db;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 12px;
+      text-align: center;
+      color: #4b5563;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 11px;
+    }
+    .dropzone h2 { font-size: 13px; margin-bottom: 3px; }
+    .dropzone p { font-size: 11px; color: #6b7280; }
+    .dropzone:hover { border-color: #2563eb; background: #f3f4ff; }
+    .dropzone.dragover { border-color: #16a34a; background: #ecfdf5; }
+
+    .surface {
+      flex: 1;
+      padding: 8px;
+      overflow: auto;
+      font-size: 11px;
+      line-height: 1.35;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      white-space: pre;
+    }
+    textarea.surface {
+      border: none;
+      outline: none;
+      resize: none;
+      background: #f9fafb;
+    }
+
+    .tree-view { background: #f9fafb; white-space: normal; }
+    .tree-line {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 11px;
+      padding: 1px 3px;
+      cursor: default;
+      border-radius: 3px;
+    }
+    .node { margin-bottom: 0; }
+
+    .expander {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid #d1d5db;
+      background: #e5e7eb;
+      color: #374151;
+      font-size: 10px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .expander.leaf { opacity: 0; cursor: default; }
+
+    .icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      border: 1px solid #d1d5db;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 600;
+      color: #374151;
+      background: #e5e7eb;
+      flex-shrink: 0;
+    }
+    .icon.box { width: 8px; height: 8px; border-radius: 2px; font-size: 0; }
+
+    .json-key { color: #1d4ed8; font-weight: 600; }
+    .json-string { color: #047857; }
+    .json-number { color: #b45309; }
+    .json-boolean { color: #7c3aed; }
+    .json-null { color: #6b7280; font-style: italic; }
+
+    .children-wrap {
+      margin-left: 14px;
+      border-left: 1px solid #e5e7eb;
+      padding-left: 6px;
+      margin-top: 1px;
+    }
+    .collapsed > .children-wrap { display: none; }
+
+    .placeholder {
+      color: #9ca3af;
+      padding: 18px 8px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .tree-line.selected {
+      background: rgba(59,130,246,0.15);
+      box-shadow: inset 0 0 0 1px rgba(59,130,246,0.35);
+    }
+    .tree-line.match-current { background: rgba(250,204,21,0.4); }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(0);
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,0.95);
+      color: #f9fafb;
+      font-size: 11px;
+      box-shadow: 0 2px 6px rgba(15,23,42,0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+      z-index: 50;
+    }
+
+    /* Donate QR modal */
+    .qr-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+    }
+    .qr-modal {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 16px 16px 12px;
+      max-width: 340px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.35);
+    }
+    .qr-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #111827; }
+    .qr-subtitle { font-size: 11px; color: #6b7280; margin-bottom: 10px; }
+    .qr-image-wrap {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      margin-bottom: 8px;
+    }
+    .qr-image { max-width: 100%; height: auto; display: block; border-radius: 10px; }
+    .qr-close { margin-top: 4px; font-size: 11px; color: #4b5563; cursor: pointer; text-decoration: underline; }
+
+    /* Support strip anchored at bottom */
+    .sidebar-main-tools {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: auto;
+    }
+    .sidebar-support {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .support-card {
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 0% 0%, #22c55e 0, #16a34a 30%, #0f766e 100%);
+      color: #ecfdf5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .support-text {
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    .support-title {
+      font-weight: 600;
+      font-size: 11px;
+    }
+    .support-sub {
+      font-size: 10px;
+      opacity: 0.9;
+    }
+    .support-btn {
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      border: none;
+      background: #fefce8;
+      color: #166534;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 1px 3px rgba(15,23,42,0.25);
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+    }
+    .support-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 6px rgba(15,23,42,0.35);
+      background: #fef9c3;
+    }
+  </style>
+  <script>
+  window.va = window.va || function () {
+    (window.vaq = window.vaq || []).push(arguments);
+  };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <h1 style="font-size: 19px;">Json Viewer</h1>
+    </div>
+
+    <div class="actions-bar">
+      <button id="modeBtn" class="btn btn-primary" disabled>Tree View</button>
+      <button id="formatBtn" class="btn" disabled>Format</button>
+      <button id="clearBtn" class="btn" disabled>Clear</button>
+      <button id="copyBtn" class="btn" disabled>Copy</button>
+      <button id="validateBtn" class="btn" disabled>Validate</button>
+    </div>
+
+    <div class="main">
+      <div class="content">
+        <div class="panel">
+          <div id="editorWrapper" style="display:flex; flex-direction:column; flex:1; min-height:0;">
+            <div id="dropzone" class="dropzone">
+              <h2>Drop JSON file here</h2>
+              <p>or click to browse, or paste JSON in the box below</p>
+              <input id="fileInput" type="file" accept=".json,text/plain" style="display:none;">
+            </div>
+            <textarea id="editor" class="surface" placeholder="Paste your JSON here, then click 'Tree View'..."></textarea>
+          </div>
+
+          <div id="treeContainer" class="surface tree-view" style="display:none;">
+            <div class="placeholder">Tree view will appear here.</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="rightSidebar" class="right-sidebar">
+        <div class="right-resizer" id="rightResizer"></div>
+
+        <div class="sidebar-main-tools">
+          <div>
+            <div class="search-label">Search key</div>
+            <div class="search-row">
+              <input id="searchInput" class="search-input" placeholder="Search with keyword here..." />
+              <button id="nextBtn" class="nav-btn">Next &#8595;</button>
+              <button id="prevBtn" class="nav-btn">&#8593; Prev</button>
+            </div>
+            <div id="matchInfo" class="match-info"></div>
+            <div id="errorBar" class="error-bar"></div>
+          </div>
+
+          <!-- Path helper -->
+          <div class="tool-section" style="margin-top:0;">
+            <div class="tool-title">
+              <span>Path helper</span>
+              <div>
+                <button id="jsPathBtn" class="btn btn-xs">JavaScript</button>
+                <button id="pyPathBtn" class="btn btn-xs">Python</button>
+              </div>
+            </div>
+            <div id="pathDisplay" class="path-display empty" title="Click to copy">
+              Select a node to see its path...
+            </div>
+          </div>
+
+          <!-- JSON to CSV tool -->
+          <div class="tool-section">
+            <div class="tool-title">
+              <span>JSON → CSV</span>
+              <span class="tool-caption">objects / arrays of objects</span>
+            </div>
+            <div class="tool-row">
+              <button id="convertCsvBtn" class="btn" style="flex:0 0 auto;" disabled>Convert</button>
+              <button id="downloadCsvBtn" class="btn" style="flex:1 1 auto;" disabled>Download CSV</button>
+            </div>
+            <div class="progress-wrap">
+              <div id="csvProgressBar" class="progress-bar"></div>
+            </div>
+            <div id="csvProgressLabel" class="progress-label"></div>
+            <div id="csvError" class="tool-error"></div>
+          </div>
+        </div>
+
+        <!-- Support strip at bottom -->
+        <div class="sidebar-support">
+          <div class="support-card">
+            <div class="support-text">
+              <div class="support-title">Enjoying this viewer?</div>
+              <div class="support-sub">Buy me a coffee to support more dev tools.</div>
+            </div>
+            <button id="coffeeBtn" class="support-btn">
+              ☕ Donate
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast">Path copied</div>
+
+  <!-- Donate QR modal -->
+  <div id="qrBackdrop" class="qr-modal-backdrop">
+    <div class="qr-modal">
+      <div class="qr-title">Your Bank UPI QR</div>
+      <div class="qr-subtitle">Scan this code in any UPI app to donate</div>
+      <div class="qr-image-wrap">
+        <!-- Use your attached QR image name/path here -->
+        <img src="upi-qr.jpeg" alt="UPI QR code" class="qr-image" />
+      </div>
+      <div class="qr-close" id="qrClose">Close</div>
+    </div>
+  </div>
+
+  <script>
+    const editorWrapper = document.getElementById('editorWrapper');
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const editor = document.getElementById('editor');
+    const treeContainer = document.getElementById('treeContainer');
+    const modeBtn = document.getElementById('modeBtn');
+    const formatBtn = document.getElementById('formatBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const validateBtn = document.getElementById('validateBtn');
+    const errorBar = document.getElementById('errorBar');
+
+    const searchInput = document.getElementById('searchInput');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const matchInfo = document.getElementById('matchInfo');
+
+    const rightSidebar = document.getElementById('rightSidebar');
+    const rightResizer = document.getElementById('rightResizer');
+
+    const pathDisplay = document.getElementById('pathDisplay');
+    const jsPathBtn = document.getElementById('jsPathBtn');
+    const pyPathBtn = document.getElementById('pyPathBtn');
+    let currentPathJs = '';
+    let currentPathLang = 'js';
+
+    const toastEl = document.getElementById('toast');
+    let toastTimeoutId = null;
+
+    const convertCsvBtn = document.getElementById('convertCsvBtn');
+    const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+    const csvProgressBar = document.getElementById('csvProgressBar');
+    const csvProgressLabel = document.getElementById('csvProgressLabel');
+    const csvError = document.getElementById('csvError');
+
+    const coffeeBtn = document.getElementById('coffeeBtn');
+    const qrBackdrop = document.getElementById('qrBackdrop');
+    const qrClose = document.getElementById('qrClose');
+
+    let hasJson = false;
+    let isShowingTree = false;
+    let currentMatches = [];
+    let currentMatchIndex = -1;
+    let selectedRow = null;
+    let lastCsvBlobUrl = null;
+
+    jsPathBtn.classList.add('btn-toggle-active');
+
+    function showToast(message) {
+      toastEl.textContent = message;
+      toastEl.style.opacity = '1';
+      toastEl.style.transform = 'translateX(-50%) translateY(-4px)';
+      if (toastTimeoutId) clearTimeout(toastTimeoutId);
+      toastTimeoutId = setTimeout(() => {
+        toastEl.style.opacity = '0';
+        toastEl.style.transform = 'translateX(-50%) translateY(0)';
+      }, 1600);
+    }
+
+    function enableButtons() {
+      modeBtn.disabled = false;
+      formatBtn.disabled = false;
+      clearBtn.disabled = false;
+      copyBtn.disabled = false;
+      validateBtn.disabled = false;
+    }
+
+    function showError(msg) {
+      errorBar.textContent = 'JSON error: ' + msg;
+      errorBar.style.display = 'block';
+    }
+    function clearError() { errorBar.style.display = 'none'; }
+
+    function showEditorMode() {
+      treeContainer.style.display = 'none';
+      editorWrapper.style.display = 'flex';
+      isShowingTree = false;
+      modeBtn.textContent = 'Tree View';
+    }
+
+    function showTreeMode() {
+      editorWrapper.style.display = 'none';
+      treeContainer.style.display = 'block';
+      isShowingTree = true;
+      modeBtn.textContent = 'JSON View';
+      renderTree();
+    }
+
+    (function initRightResizer() {
+      let isResizing = false;
+      let startX = 0, startWidth = 0;
+      rightResizer.addEventListener('mousedown', e => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = rightSidebar.offsetWidth;
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+      });
+      window.addEventListener('mousemove', e => {
+        if (!isResizing) return;
+        const dx = startX - e.clientX;
+        let newWidth = startWidth + dx;
+        newWidth = Math.max(230, Math.min(380, newWidth));
+        rightSidebar.style.width = newWidth + 'px';
+      });
+      window.addEventListener('mouseup', () => {
+        if (isResizing) { isResizing = false; document.body.style.cursor = 'default'; }
+      });
+    })();
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    ['dragover','dragenter'].forEach(ev => {
+      dropzone.addEventListener(ev, e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+    });
+    ['dragleave','drop'].forEach(ev => {
+      dropzone.addEventListener(ev, e => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+        if (ev === 'drop') {
+          const file = e.dataTransfer.files[0];
+          if (file) loadFile(file);
+        }
+      });
+    });
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) loadFile(file);
+    });
+
+    function loadFile(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        editor.value = e.target.result;
+        handleEditorChange();
+        showTreeMode();
+      };
+      reader.readAsText(file);
+    }
+
+    editor.addEventListener('input', handleEditorChange);
+
+    function handleEditorChange() {
+      const text = editor.value.trim();
+      if (!text) {
+        hasJson = false;
+        disableAllForEmpty();
+        return;
+      }
+      try {
+        const parsed = JSON.parse(text);
+        hasJson = true;
+        enableButtons();
+        clearError();
+        validateCsvSupport(parsed);
+        if (isShowingTree) renderTree();
+      } catch {
+        hasJson = false;
+        modeBtn.disabled = true;
+        formatBtn.disabled = true;
+        copyBtn.disabled = true;
+        validateBtn.disabled = true;
+        convertCsvBtn.disabled = true;
+        resetCsvUi();
+      }
+    }
+
+    function disableAllForEmpty() {
+      modeBtn.disabled = true;
+      formatBtn.disabled = true;
+      clearBtn.disabled = false;
+      copyBtn.disabled = true;
+      validateBtn.disabled = true;
+      searchInput.value = '';
+      matchInfo.textContent = '';
+      currentMatches = [];
+      currentMatchIndex = -1;
+      selectedRow = null;
+      treeContainer.querySelectorAll('.tree-line').forEach(el => {
+        el.classList.remove('match-current', 'selected');
+      });
+      currentPathJs = '';
+      updatePathDisplay();
+      treeContainer.innerHTML = '<div class="placeholder">Tree view will appear here.</div>';
+      resetCsvUi();
+    }
+
+    function getValueClass(v) {
+      if (typeof v === 'string') return 'json-string';
+      if (typeof v === 'number') return 'json-number';
+      if (typeof v === 'boolean') return 'json-boolean';
+      if (v === null) return 'json-null';
+      return '';
+    }
+    function escapeHtml(t) {
+      return String(t)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+    function iconHtml(value) {
+      if (Array.isArray(value)) return '<span class="icon">[]</span>';
+      if (value !== null && typeof value === 'object') return '<span class="icon">{}</span>';
+      return '<span class="icon box"></span>';
+    }
+
+    function buildTree(obj, path = 'root') {
+      if (typeof obj !== 'object' || obj === null) {
+        const cls = getValueClass(obj);
+        const val = typeof obj === 'string' ? '"' + escapeHtml(obj) + '"' : escapeHtml(obj);
+        return `<div class="tree-line ${cls}" data-path="${escapeHtml(path)}">${iconHtml(obj)} ${val}</div>`;
+      }
+      const isArray = Array.isArray(obj);
+      const keys = isArray ? obj.map((_, i) => i) : Object.keys(obj);
+      let html = '';
+      keys.slice(0,300).forEach(key => {
+        const value = obj[key];
+        const isChildObj = typeof value === 'object' && value !== null;
+        const hasChildren = isChildObj && (Array.isArray(value) ? value.length > 0 : Object.keys(value).length > 0);
+        const label = isArray ? `[${key}]` : escapeHtml(String(key));
+        const segment = isArray
+          ? `[${key}]`
+          : (String(key).match(/^[A-Za-z_][A-Za-z0-9_]*$/) ? `.${key}` : `["${key}"]`);
+        const thisPath = path + segment;
+        html += `<div class="node ${hasChildren ? 'collapsible collapsed' : ''}">
+          <div class="tree-line" data-path="${escapeHtml(thisPath)}">
+            <div class="expander ${hasChildren ? '' : 'leaf'}" data-expanded="false">
+              ${hasChildren ? '+' : ''}
+            </div>
+            ${iconHtml(value)}
+            <span class="json-key tree-key">${label}</span>:
+            ${!hasChildren ? renderPrimitive(value) : ''}
+          </div>`;
+        if (hasChildren) {
+          html += `<div class="children-wrap" style="display:none;">${buildTree(value, thisPath)}</div>`;
+        }
+        html += `</div>`;
+      });
+      if (keys.length > 300)
+        html += `<div class="tree-line json-null">... and ${keys.length-300} more items</div>`;
+      return html;
+    }
+
+    function renderPrimitive(v) {
+      const cls = getValueClass(v);
+      const val = typeof v === 'string' ? '"' + escapeHtml(v) + '"' : escapeHtml(v);
+      return `<span class="${cls}">${val}</span>`;
+    }
+
+    function renderTree() {
+      clearError();
+      selectedRow = null;
+      const text = editor.value.trim();
+      if (!text) {
+        treeContainer.innerHTML = '<div class="placeholder">No JSON loaded.</div>';
+        return;
+      }
+      try {
+        const data = JSON.parse(text);
+        treeContainer.innerHTML = buildTree(data) || '<div class="placeholder">Empty object/array.</div>';
+        recomputeMatches(true);
+      } catch (e) {
+        showError(e.message);
+        treeContainer.innerHTML = '<div class="placeholder">Invalid JSON. Switch to JSON View and fix it.</div>';
+      }
+    }
+
+    modeBtn.addEventListener('click', () => {
+      if (!hasJson) return;
+      isShowingTree ? showEditorMode() : showTreeMode();
+    });
+
+    formatBtn.addEventListener('click', () => {
+      if (!hasJson) return;
+      try {
+        const obj = JSON.parse(editor.value);
+        editor.value = JSON.stringify(obj,null,2);
+        clearError();
+        handleEditorChange();
+      } catch (e) { showError(e.message); }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      editor.value = '';
+      hasJson = false;
+      clearError();
+      showEditorMode();
+      treeContainer.innerHTML = '<div class="placeholder">Tree view will appear here.</div>';
+      modeBtn.disabled = true;
+      formatBtn.disabled = true;
+      copyBtn.disabled = true;
+      validateBtn.disabled = true;
+      convertCsvBtn.disabled = true;
+      searchInput.value = '';
+      matchInfo.textContent = '';
+      currentMatches = [];
+      currentMatchIndex = -1;
+      selectedRow = null;
+      treeContainer.querySelectorAll('.tree-line').forEach(el =>
+        el.classList.remove('match-current', 'selected')
+      );
+      currentPathJs = '';
+      updatePathDisplay();
+      resetCsvUi();
+    });
+
+    copyBtn.addEventListener('click', async () => {
+      if (!hasJson) return;
+      try { await navigator.clipboard.writeText(editor.value); }
+      catch {
+        const ta = document.createElement('textarea');
+        ta.value = editor.value;
+        ta.style.position='fixed'; ta.style.left='-9999px';
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+    });
+
+    validateBtn.addEventListener('click', () => {
+      if (!hasJson) return;
+      try { JSON.parse(editor.value); alert('Valid JSON'); }
+      catch(e){ showError(e.message); }
+    });
+
+    treeContainer.addEventListener('click', e => {
+      const exp = e.target.closest('.expander');
+      if (exp && !exp.classList.contains('leaf')) {
+        const node = exp.closest('.node');
+        const children = node.querySelector('.children-wrap');
+        const expanded = exp.getAttribute('data-expanded') === 'true';
+        if (expanded) {
+          exp.setAttribute('data-expanded','false');
+          exp.textContent = '+';
+          children.style.display='none';
+          node.classList.add('collapsed');
+        } else {
+          exp.setAttribute('data-expanded','true');
+          exp.textContent = '-';
+          children.style.display='block';
+          node.classList.remove('collapsed');
+        }
+        return;
+      }
+      const line = e.target.closest('.tree-line');
+      if (!line) return;
+      if (selectedRow) selectedRow.classList.remove('selected');
+      treeContainer.querySelectorAll('.tree-line').forEach(el =>
+        el.classList.remove('match-current')
+      );
+      selectedRow = line;
+      selectedRow.classList.add('selected');
+      currentPathJs = line.getAttribute('data-path') || '';
+      updatePathDisplay();
+      const keyEl = line.querySelector('.tree-key');
+      if (keyEl) {
+        const keyText = keyEl.textContent.trim().replace(/:$/,'');
+        searchInput.value = keyText;
+        recomputeMatches(false);
+      }
+    });
+
+    function recomputeMatches(autoFocus = true) {
+      const term = searchInput.value.trim();
+      currentMatches = [];
+      currentMatchIndex = -1;
+      treeContainer.querySelectorAll('.tree-line').forEach(el =>
+        el.classList.remove('match-current')
+      );
+      if (!term) { matchInfo.textContent=''; return; }
+      const lines = Array.from(treeContainer.querySelectorAll('.tree-line'));
+      lines.forEach(line => {
+        const keyEl = line.querySelector('.tree-key');
+        if (!keyEl) return;
+        const keyText = keyEl.textContent.trim().replace(/:$/,'');
+        if (keyText === term) currentMatches.push(line);
+      });
+      matchInfo.textContent = currentMatches.length
+        ? `${currentMatches.length} match(es) found`
+        : 'No matches found';
+      if (autoFocus && currentMatches.length) {
+        currentMatchIndex = 0;
+        focusMatch(0);
+      }
+    }
+
+    function openParentsForLine(line) {
+      let node = line.closest('.node');
+      while (node && node !== treeContainer) {
+        const parentWrap = node.parentElement;
+        if (parentWrap && parentWrap.classList.contains('children-wrap')) {
+          const parentNode = parentWrap.closest('.node');
+          const exp = parentNode.querySelector('.expander');
+          if (exp && !exp.classList.contains('leaf')) {
+            exp.setAttribute('data-expanded','true');
+            exp.textContent='-';
+            parentNode.classList.remove('collapsed');
+            parentWrap.style.display='block';
+          }
+          node = parentNode;
+        } else {
+          node = parentWrap ? parentWrap.closest('.node') : null;
+        }
+      }
+    }
+
+    function focusMatch(index) {
+      treeContainer.querySelectorAll('.tree-line').forEach(el =>
+        el.classList.remove('match-current')
+      );
+      if (!currentMatches.length) return;
+      const line = currentMatches[index];
+      openParentsForLine(line);
+      line.classList.add('match-current');
+      line.scrollIntoView({block:'center',behavior:'smooth'});
+      matchInfo.textContent = `${currentMatches.length} match(es), showing ${index+1}`;
+    }
+
+    nextBtn.addEventListener('click', () => {
+      if (!currentMatches.length) return;
+      currentMatchIndex = (currentMatchIndex+1) % currentMatches.length;
+      if (selectedRow) selectedRow.classList.remove('selected');
+      focusMatch(currentMatchIndex);
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (!currentMatches.length) return;
+      currentMatchIndex = (currentMatchIndex-1+currentMatches.length)%currentMatches.length;
+      if (selectedRow) selectedRow.classList.remove('selected');
+      focusMatch(currentMatchIndex);
+    });
+
+    searchInput.addEventListener('change', () => recomputeMatches(true));
+    searchInput.addEventListener('keyup', e => { if (e.key==='Enter') recomputeMatches(true); });
+
+    function jsToPythonPath(jsPath) {
+      if (!jsPath || !jsPath.startsWith('root')) return '';
+      const withoutRoot = jsPath.slice('root'.length);
+      const tokens = [];
+      let i = 0;
+      while (i < withoutRoot.length) {
+        const ch = withoutRoot[i];
+        if (ch === '.') {
+          i++;
+          let name = '';
+          while (i < withoutRoot.length && /[A-Za-z0-9_]/.test(withoutRoot[i])) {
+            name += withoutRoot[i++];
+          }
+          if (name) tokens.push({ type: 'dot', key: name });
+        } else if (ch === '[') {
+          const end = withoutRoot.indexOf(']', i);
+          if (end === -1) break;
+          const inside = withoutRoot.slice(i + 1, end);
+          if (/^\d+$/.test(inside)) {
+            tokens.push({ type: 'index', index: Number(inside) });
+          } else if ((inside.startsWith('"') && inside.endsWith('"')) ||
+                     (inside.startsWith("'") && inside.endsWith("'"))) {
+            tokens.push({ type: 'key', key: inside.slice(1, -1) });
+          }
+          i = end + 1;
+        } else { i++; }
+      }
+      if (!tokens.length) return 'root';
+      let py = 'root';
+      tokens.forEach((t, idx) => {
+        const isLast = idx === tokens.length - 1;
+        if (t.type === 'index') py += `[${t.index}]`;
+        else {
+          const keyStr = JSON.stringify(t.key);
+          if (isLast) py += `.get(${keyStr})`;
+          else py += `[${keyStr}]`;
+        }
+      });
+      return py;
+    }
+
+    function updatePathDisplay() {
+      if (!currentPathJs) {
+        pathDisplay.textContent = 'Select a node to see its path...';
+        pathDisplay.classList.add('empty');
+        return;
+      }
+      pathDisplay.classList.remove('empty');
+      pathDisplay.textContent =
+        currentPathLang === 'js' ? currentPathJs : jsToPythonPath(currentPathJs);
+    }
+
+    jsPathBtn.addEventListener('click', () => {
+      currentPathLang = 'js';
+      jsPathBtn.classList.add('btn-toggle-active');
+      pyPathBtn.classList.remove('btn-toggle-active');
+      updatePathDisplay();
+    });
+
+    pyPathBtn.addEventListener('click', () => {
+      currentPathLang = 'py';
+      pyPathBtn.classList.add('btn-toggle-active');
+      jsPathBtn.classList.remove('btn-toggle-active');
+      updatePathDisplay();
+    });
+
+    pathDisplay.addEventListener('click', () => {
+      if (!currentPathJs) return;
+      const text = currentPathLang === 'js' ? currentPathJs : jsToPythonPath(currentPathJs);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+          .then(() => showToast('Path copied'))
+          .catch(() => showToast('Unable to copy path'));
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast('Path copied');
+        } catch {
+          showToast('Unable to copy path');
+        }
+        document.body.removeChild(ta);
+      }
+    });
+
+    function resetCsvUi() {
+      csvProgressBar.style.width = '0%';
+      csvProgressLabel.textContent = '';
+      csvError.textContent = '';
+      downloadCsvBtn.disabled = true;
+      if (lastCsvBlobUrl) {
+        URL.revokeObjectURL(lastCsvBlobUrl);
+        lastCsvBlobUrl = null;
+      }
+    }
+
+    function jsonToCsvArray(json) {
+      if (!Array.isArray(json)) {
+        if (json && typeof json === 'object') json = [json];
+        else throw new Error('JSON must be an object or an array of objects.');
+      }
+      if (json.length === 0) throw new Error('JSON array is empty, nothing to convert.');
+      for (const item of json) {
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+          throw new Error('All items must be plain objects (no arrays or primitives).');
+        }
+      }
+      const headers = Array.from(new Set(json.flatMap(row => Object.keys(row))));
+      const rows = json.map(row =>
+        headers.map(h => {
+          const v = row[h];
+          if (v === null || v === undefined) return '';
+          if (typeof v === 'object') {
+            throw new Error('Nested objects/arrays are not supported in CSV conversion.');
+          }
+          const s = String(v).replace(/"/g, '""');
+          return `"${s}"`;
+        })
+      );
+      return { headers, rows };
+    }
+
+    function validateCsvSupport(parsedJson) {
+      resetCsvUi();
+      try {
+        jsonToCsvArray(parsedJson);
+        csvProgressLabel.textContent = 'Ready: JSON can be converted to CSV.';
+        convertCsvBtn.disabled = false;
+      } catch (e) {
+        csvError.textContent = e.message;
+        convertCsvBtn.disabled = true;
+      }
+    }
+
+    function buildCsvString(headers, rows) {
+      const head = headers.map(h => `"${String(h).replace(/"/g,'""')}"`).join(',');
+      const lines = [head, ...rows.map(r => r.join(','))];
+      return lines.join('\r\n');
+    }
+
+    convertCsvBtn.addEventListener('click', () => {
+      resetCsvUi();
+      if (!hasJson) {
+        csvError.textContent = 'Load valid JSON first.';
+        return;
+      }
+      let json;
+      try { json = JSON.parse(editor.value); }
+      catch { csvError.textContent = 'Invalid JSON, cannot convert.'; return; }
+      let csvData;
+      try { csvData = jsonToCsvArray(json); }
+      catch (e) { csvError.textContent = e.message; return; }
+
+      let progress = 0;
+      csvProgressLabel.textContent = 'Starting conversion...';
+      const interval = setInterval(() => {
+        progress += Math.random() * 18 + 5;
+        if (progress >= 100) progress = 100;
+        csvProgressBar.style.width = progress + '%';
+        csvProgressLabel.textContent = `Converting... ${Math.round(progress)}%`;
+        if (progress >= 100) {
+          clearInterval(interval);
+          try {
+            const csvString = buildCsvString(csvData.headers, csvData.rows);
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            lastCsvBlobUrl = URL.createObjectURL(blob);
+            downloadCsvBtn.disabled = false;
+            csvProgressLabel.textContent = 'Conversion complete. Ready to download.';
+          } catch {
+            csvError.textContent = 'Unexpected error while building CSV.';
+            csvProgressLabel.textContent = '';
+            csvProgressBar.style.width = '0%';
+          }
+        }
+      }, 220);
+    });
+
+    downloadCsvBtn.addEventListener('click', () => {
+      if (!lastCsvBlobUrl) return;
+      const a = document.createElement('a');
+      a.href = lastCsvBlobUrl;
+      a.download = 'data.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+
+    // Donate QR interactions
+    coffeeBtn.addEventListener('click', () => {
+      qrBackdrop.style.display = 'flex';
+    });
+    qrClose.addEventListener('click', () => {
+      qrBackdrop.style.display = 'none';
+    });
+    qrBackdrop.addEventListener('click', e => {
+      if (e.target === qrBackdrop) qrBackdrop.style.display = 'none';
+    });
+  </script>
+
+  <div style="
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  background: #0f172a;
+  color: #e5e7eb;
+  font-size: 11px;
+  padding: 3px 8px 4px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  box-shadow: 0 -1px 4px rgba(15,23,42,0.4);
+">
+  <strong>Privacy, Security &amp; Compliance:  :</strong>
+  No JSON data is uploaded, logged, or stored on any server.
+</div>
+</body>
+</html>
