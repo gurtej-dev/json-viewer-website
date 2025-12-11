@@ -1,3 +1,2 @@
 # Online Json Viewer tool
-@json-viewer.online
-
+visit <https://json-viewer.omline>.
